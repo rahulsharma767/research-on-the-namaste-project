@@ -1,73 +1,46 @@
 🥇 PS 4 — NAMASTE ↔ ICD-11 API
 
-This one is interesting because teams may make a boring CRUD/API system.
+System Architecture:
 
-You can turn it into:
+                    ┌─────────────────┐
+                    │ Existing EMR    │
+                    └────────┬────────┘
+                             │
+                       FHIR R4 API
+                             │
+                             ▼
+              ┌──────────────────────────┐
+              │     API GATEWAY          │
+              │        FastAPI           │
+              └────────────┬─────────────┘
+                           │
+          ┌────────────────┼─────────────────┐
+          │                │                 │
+          ▼                ▼                 ▼
+   Authentication     Terminology       Clinical
+   & Authorization      Service          Bundling
+          │                │                 │
+          ▼                ▼                 ▼
+   OAuth 2.0 / ABHA   CodeSystem       FHIR Bundle
+   Consent            ConceptMap        Dual Coding
+   Access Control     Lookup
+                      Translation
+                          │
+             ┌────────────┼─────────────┐
+             ▼            ▼             ▼
+          NAMASTE        WHO ICD       Biomedical
+           CSVs          ICD-API       terminology
+             │             │
+             └──────┬──────┘
+                    ▼
+             PostgreSQL
+                    │
+          ┌─────────┴─────────┐
+          ▼                   ▼
+    FHIR Terminology      Search Index
+       Store              BM25/Vector
+                              │
+                              ▼
+                         AI Layer
+                    (optional enhancement)
 
-Medical Semantic AI Engine
-
-Instead of only:
-
-NAMASTE code → ICD code
-
-use:
-
-Medical terminology → semantic representation → standardized code
-
-Example:
-
-Doctor types:
-
-"A condition described using traditional terminology..."
-
-AI understands the semantic meaning and suggests:
-
-NAMASTE code
-
-ICD-11 mapping
-
-Confidence
-
-Related terminology
-
-Technology
-
-Use:
-
-Embeddings
-Vector database
-RAG
-LLM
-Knowledge graph
-🔥 USP
-Explainable mapping
-
-Don't just return:
-
-ICD Code X
-
-Return:
-
-Suggested mapping: X
-Confidence: 94%
-Based on: symptoms + terminology + traditional medicine concept
-Alternatives: Y, Z
-
-This makes the system much more useful.
-
-Killer architecture
-Doctor
- ↓
-Natural Language
- ↓
-Medical NLP
- ↓
-Vector Search
- ↓
-Knowledge Graph
- ↓
-NAMASTE ↔ ICD Mapping
- ↓
-Hospital EMR
-
-That screams health-tech infrastructure.
